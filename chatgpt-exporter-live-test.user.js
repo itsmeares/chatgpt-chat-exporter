@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Chat Exporter - Complete Markdown Live Test
 // @namespace    https://github.com/itsmeares/chatgpt-chat-exporter
-// @version      0.0.3
+// @version      0.0.4
 // @description  Temporary isolated live-test build for complete Markdown and Project ZIP export.
 // @author       rashidazarang, itsmeares
 // @match        https://chat.openai.com/*
@@ -9,7 +9,7 @@
 // @match        https://chatgpt.com/c/*
 // @match        https://chat.com/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js#sha256=acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e
-// @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/feat/complete-markdown-bulk-export/src/complete-markdown-export.js
+// @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/1354bba4311bd3385a6c4bb07ea92582ff392fd8/src/complete-markdown-export.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
@@ -51,17 +51,12 @@
         });
     }
 
-    function inject(root = document) {
-        const menus = [];
-        if (root?.matches?.(MENU_SELECTOR)) menus.push(root);
-        menus.push(...(root?.querySelectorAll?.(MENU_SELECTOR) || []));
+    function inject() {
+        const menus = Array.from(document.querySelectorAll(MENU_SELECTOR)).filter(visible);
 
-        for (const menu of menus.filter(visible)) {
+        for (const menu of menus) {
             if (menu.querySelector(`[${TEST_ITEM}]`)) continue;
 
-            // The complete-markdown module owns this row and injects it only in
-            // the current conversation menu. Using it as our template makes the
-            // live test completely independent of the production exporter UI.
             const projectItem = menu.querySelector(`[${PROJECT_ITEM}]`);
             if (!visible(projectItem)) continue;
 
@@ -80,8 +75,7 @@
                 try {
                     await globalThis.ChatGptCompleteMarkdownExporter.exportCurrent();
                 } catch (error) {
-                    // exportCurrent already presents a fail-closed user-facing
-                    // error; avoid an unhandled promise rejection in the test UI.
+                    // exportCurrent already shows a fail-closed user-facing error.
                 } finally {
                     document.dispatchEvent(new KeyboardEvent('keydown', {
                         key: 'Escape',
@@ -94,15 +88,18 @@
         }
     }
 
-    inject(document);
-    const observer = new MutationObserver(records => {
-        for (const record of records) {
-            if (record.type === 'attributes') inject(record.target);
-            for (const node of record.addedNodes) {
-                if (node.nodeType === Node.ELEMENT_NODE) inject(node);
-            }
-        }
-    });
+    let scheduled = false;
+    function scheduleInject() {
+        if (scheduled) return;
+        scheduled = true;
+        setTimeout(() => {
+            scheduled = false;
+            inject();
+        }, 0);
+    }
+
+    scheduleInject();
+    const observer = new MutationObserver(() => scheduleInject());
     observer.observe(document.documentElement, {
         attributes: true,
         attributeFilter: ['class', 'hidden', 'style', 'data-state'],
