@@ -119,6 +119,7 @@ ${indent(userscriptUiSource, 4)}
 function integratedUserscript() {
     const repo = 'itsmeares/chatgpt-chat-exporter';
     const fileName = 'chatgpt-exporter.user.js';
+    const integratedVersion = '1.2.0';
     const rawFile = `https://github.com/${repo}/raw/master/${fileName}`;
     const rawBase = `https://raw.githubusercontent.com/${repo}/master`;
     const jsZip = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js#sha256=acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e';
@@ -126,7 +127,7 @@ function integratedUserscript() {
     return `// ==UserScript==
 // @name         ChatGPT Chat Exporter
 // @namespace    https://github.com/${repo}
-// @version      ${version}
+// @version      ${integratedVersion}
 // @description  Export complete ChatGPT Markdown, project Markdown ZIPs, PDF, or raw JSON from the native conversation menu.
 // @author       rashidazarang, itsmeares
 // @homepageURL  https://github.com/${repo}
