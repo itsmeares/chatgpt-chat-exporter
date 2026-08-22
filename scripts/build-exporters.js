@@ -119,14 +119,16 @@ ${indent(userscriptUiSource, 4)}
 function integratedUserscript() {
     const repo = 'itsmeares/chatgpt-chat-exporter';
     const fileName = 'chatgpt-exporter.user.js';
+    const integratedVersion = '1.2.0';
     const rawFile = `https://github.com/${repo}/raw/master/${fileName}`;
     const rawBase = `https://raw.githubusercontent.com/${repo}/master`;
+    const jsZip = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js#sha256=acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e';
 
     return `// ==UserScript==
 // @name         ChatGPT Chat Exporter
 // @namespace    https://github.com/${repo}
-// @version      ${version}
-// @description  Export ChatGPT conversations to Markdown, PDF, or complete raw JSON from the native conversation menu.
+// @version      ${integratedVersion}
+// @description  Export complete ChatGPT Markdown, selected chats, Project ZIPs, PDF, or raw JSON.
 // @author       rashidazarang, itsmeares
 // @homepageURL  https://github.com/${repo}
 // @supportURL   https://github.com/${repo}/issues
@@ -136,10 +138,13 @@ function integratedUserscript() {
 // @match        https://chatgpt.com/*
 // @match        https://chatgpt.com/c/*
 // @match        https://chat.com/*
+// @require      ${jsZip}
 // @require      ${rawBase}/src/extraction-engine.js
 // @require      ${rawBase}/src/progress-overlay.js
 // @require      ${rawBase}/src/userscript-ui.js
 // @require      ${rawBase}/src/raw-json-export.js
+// @require      ${rawBase}/src/complete-markdown-export.js
+// @require      ${rawBase}/src/chat-selection-export-v2.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
@@ -149,7 +154,8 @@ function integratedUserscript() {
 
     globalThis.ChatExporterUi.install({
         engine: globalThis.ChatExporterEngine,
-        progress: globalThis.ChatExporterProgress
+        progress: globalThis.ChatExporterProgress,
+        exportMarkdown: () => globalThis.ChatGptCompleteMarkdownExporter.exportCurrent()
     });
 })();
 `;
