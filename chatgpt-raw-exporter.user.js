@@ -16,6 +16,7 @@
 (() => {
     'use strict';
 
+    const LEGACY_BUTTON_ID = 'chatgpt-raw-exporter';
     const RAW_ITEM_ATTRIBUTE = 'data-chatgpt-raw-exporter-item';
     const UPSTREAM_EXPORT_ITEM_ATTRIBUTE = 'data-chat-exporter-item';
     const MENU_SELECTOR = '[role="menu"], [data-radix-menu-content]';
@@ -73,7 +74,7 @@
     }
 
     async function accountIds(token) {
-        const response = await fetch(ACOUNTS_ENDPOINT, {
+        const response = await fetch(ACCOUNTS_ENDPOINT, {
             credentials: 'include',
             cache: 'no-store',
             headers: authHeaders(token)
@@ -291,7 +292,9 @@
     }
 
     function startMenuIntegration() {
+        document.getElementById(LEGACY_BUTTON_ID)?.remove();
         injectRawMenuItem(document);
+
         const observer = new MutationObserver(records => {
             for (const record of records) {
                 if (record.type === 'attributes') injectRawMenuItem(record.target);
