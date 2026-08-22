@@ -116,6 +116,45 @@ ${indent(userscriptUiSource, 4)}
 `;
 }
 
+function integratedUserscript() {
+    const repo = 'itsmeares/chatgpt-chat-exporter';
+    const fileName = 'chatgpt-exporter.user.js';
+    const rawFile = `https://github.com/${repo}/raw/master/${fileName}`;
+    const rawBase = `https://raw.githubusercontent.com/${repo}/master`;
+
+    return `// ==UserScript==
+// @name         ChatGPT Chat Exporter
+// @namespace    https://github.com/${repo}
+// @version      ${version}
+// @description  Export ChatGPT conversations to Markdown, PDF, or complete raw JSON from the native conversation menu.
+// @author       rashidazarang, itsmeares
+// @homepageURL  https://github.com/${repo}
+// @supportURL   https://github.com/${repo}/issues
+// @downloadURL  ${rawFile}
+// @updateURL    ${rawFile}
+// @match        https://chat.openai.com/*
+// @match        https://chatgpt.com/*
+// @match        https://chatgpt.com/c/*
+// @match        https://chat.com/*
+// @require      ${rawBase}/src/extraction-engine.js
+// @require      ${rawBase}/src/progress-overlay.js
+// @require      ${rawBase}/src/userscript-ui.js
+// @require      ${rawBase}/src/raw-json-export.js
+// @grant        none
+// @license      MIT
+// ==/UserScript==
+
+(() => {
+    'use strict';
+
+    globalThis.ChatExporterUi.install({
+        engine: globalThis.ChatExporterEngine,
+        progress: globalThis.ChatExporterProgress
+    });
+})();
+`;
+}
+
 function indent(value, spaces) {
     const prefix = ' '.repeat(spaces);
     return value.split('\n').map(line => line ? `${prefix}${line}` : '').join('\n');
@@ -136,7 +175,8 @@ const outputs = new Map([
         'ChatGPT Chat Exporter - PDF',
         'Export ChatGPT conversations to Markdown or PDF from the native conversation menus',
         'chatgpt-pdf-exporter.user.js'
-    )]
+    )],
+    ['chatgpt-exporter.user.js', integratedUserscript()]
 ]);
 
 let failed = false;
