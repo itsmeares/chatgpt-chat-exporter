@@ -128,7 +128,7 @@ function integratedUserscript() {
 // @name         ChatGPT Chat Exporter
 // @namespace    https://github.com/${repo}
 // @version      ${integratedVersion}
-// @description  Export complete ChatGPT Markdown, project Markdown ZIPs, PDF, or raw JSON from the native conversation menu.
+// @description  Export complete ChatGPT Markdown, selected chats, Project ZIPs, PDF, or raw JSON.
 // @author       rashidazarang, itsmeares
 // @homepageURL  https://github.com/${repo}
 // @supportURL   https://github.com/${repo}/issues
@@ -144,6 +144,7 @@ function integratedUserscript() {
 // @require      ${rawBase}/src/userscript-ui.js
 // @require      ${rawBase}/src/raw-json-export.js
 // @require      ${rawBase}/src/complete-markdown-export.js
+// @require      ${rawBase}/src/chat-selection-export-v2.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
