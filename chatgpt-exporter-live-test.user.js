@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         ChatGPT Chat Exporter - Complete Markdown Live Test
 // @namespace    https://github.com/itsmeares/chatgpt-chat-exporter
-// @version      0.0.4
-// @description  Temporary isolated live-test build for complete Markdown and Project ZIP export.
+// @version      0.0.5
+// @description  Temporary isolated live-test build for complete Markdown, Project ZIP, and selective chat export.
 // @author       rashidazarang, itsmeares
 // @match        https://chat.openai.com/*
 // @match        https://chatgpt.com/*
@@ -10,6 +10,7 @@
 // @match        https://chat.com/*
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js#sha256=acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e
 // @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/1354bba4311bd3385a6c4bb07ea92582ff392fd8/src/complete-markdown-export.js
+// @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/c3c99869f4d928f81842a00fb395c53be0bc4b13/src/chat-selection-export.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
