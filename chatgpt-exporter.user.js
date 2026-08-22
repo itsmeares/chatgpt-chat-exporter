@@ -2,7 +2,7 @@
 // @name         ChatGPT Chat Exporter
 // @namespace    https://github.com/itsmeares/chatgpt-chat-exporter
 // @version      1.2.0
-// @description  Export complete ChatGPT Markdown, project Markdown ZIPs, PDF, or raw JSON from the native conversation menu.
+// @description  Export complete ChatGPT Markdown, selected chats, Project ZIPs, PDF, or raw JSON.
 // @author       rashidazarang, itsmeares
 // @homepageURL  https://github.com/itsmeares/chatgpt-chat-exporter
 // @supportURL   https://github.com/itsmeares/chatgpt-chat-exporter/issues
@@ -18,6 +18,7 @@
 // @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/master/src/userscript-ui.js
 // @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/master/src/raw-json-export.js
 // @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/master/src/complete-markdown-export.js
+// @require      https://raw.githubusercontent.com/itsmeares/chatgpt-chat-exporter/master/src/chat-selection-export-v2.js
 // @grant        none
 // @license      MIT
 // ==/UserScript==
