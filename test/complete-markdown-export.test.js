@@ -92,10 +92,11 @@ test('project exporter uses cursor pagination and fails closed', () => {
     assert.doesNotMatch(source, /scrollIntoView|scrollTop|findScrollContainer/);
 });
 
-test('integrated app overrides Markdown with complete payload export and includes ZIP support', () => {
+test('integrated app overrides Markdown and packages complete bulk export modules', () => {
     const userscript = fs.readFileSync(path.join(__dirname, '..', 'chatgpt-exporter.user.js'), 'utf8');
     assert.match(userscript, /@version\s+1\.2\.0/);
     assert.match(userscript, /jszip\/3\.10\.1\/jszip\.min\.js#sha256=/);
     assert.match(userscript, /src\/complete-markdown-export\.js/);
+    assert.match(userscript, /src\/chat-selection-export-v2\.js/);
     assert.match(userscript, /exportMarkdown:\s*\(\) => globalThis\.ChatGptCompleteMarkdownExporter\.exportCurrent\(\)/);
 });
