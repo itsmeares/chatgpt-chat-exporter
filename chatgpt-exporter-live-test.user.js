@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         ChatGPT Chat Exporter - Complete Markdown Live Test
 // @namespace    https://github.com/itsmeares/chatgpt-chat-exporter
-// @version      0.0.2
+// @version      0.0.3
 // @description  Temporary isolated live-test build for complete Markdown and Project ZIP export.
 // @author       rashidazarang, itsmeares
 // @match        https://chat.openai.com/*
@@ -18,22 +18,10 @@
     'use strict';
 
     const TEST_ITEM = 'data-chatgpt-complete-markdown-test-item';
+    const PROJECT_ITEM = 'data-chatgpt-project-markdown-exporter-item';
     const MENU_SELECTOR = '[role="menu"], [data-radix-menu-content]';
 
     const visible = element => Boolean(element && element.getClientRects().length);
-    const text = element => String(element?.textContent || '').replace(/\s+/g, ' ').trim();
-
-    function isSidebarMenu(menu) {
-        const labelledBy = menu.getAttribute('aria-labelledby');
-        const trigger = (labelledBy && document.getElementById(labelledBy))
-            || document.querySelector('[aria-haspopup="menu"][aria-expanded="true"]');
-        return Boolean(trigger?.closest('nav, aside, [role="navigation"]'));
-    }
-
-    function exportRow(menu) {
-        return Array.from(menu.querySelectorAll('button, [role="menuitem"], a'))
-            .find(item => visible(item) && text(item) === 'Export to Markdown') || null;
-    }
 
     function relabel(item, label) {
         const walker = document.createTreeWalker(item, NodeFilter.SHOW_TEXT);
@@ -44,6 +32,23 @@
             node.nodeValue = node.nodeValue.replace(value, label);
             return;
         }
+        const span = document.createElement('span');
+        span.textContent = label;
+        item.appendChild(span);
+    }
+
+    function stripIdentity(item) {
+        for (const attr of [
+            'id', 'data-testid', 'data-test-id', 'data-chat-exporter-item',
+            PROJECT_ITEM, 'aria-controls', 'aria-expanded', 'aria-haspopup', 'data-state'
+        ]) {
+            item.removeAttribute(attr);
+        }
+        item.querySelectorAll('[id], [data-testid], [data-test-id]').forEach(node => {
+            node.removeAttribute('id');
+            node.removeAttribute('data-testid');
+            node.removeAttribute('data-test-id');
+        });
     }
 
     function inject(root = document) {
@@ -52,36 +57,40 @@
         menus.push(...(root?.querySelectorAll?.(MENU_SELECTOR) || []));
 
         for (const menu of menus.filter(visible)) {
-            if (isSidebarMenu(menu) || menu.querySelector(`[${TEST_ITEM}]`)) continue;
-            const markdown = exportRow(menu);
-            if (!markdown) continue;
+            if (menu.querySelector(`[${TEST_ITEM}]`)) continue;
 
-            const item = markdown.cloneNode(true);
+            // The complete-markdown module owns this row and injects it only in
+            // the current conversation menu. Using it as our template makes the
+            // live test completely independent of the production exporter UI.
+            const projectItem = menu.querySelector(`[${PROJECT_ITEM}]`);
+            if (!visible(projectItem)) continue;
+
+            const item = projectItem.cloneNode(true);
+            stripIdentity(item);
             item.setAttribute(TEST_ITEM, '');
-            for (const attr of ['id', 'data-testid', 'data-test-id', 'data-chat-exporter-item', 'aria-controls', 'aria-expanded', 'aria-haspopup', 'data-state']) {
-                item.removeAttribute(attr);
-            }
-            item.querySelectorAll('[id], [data-testid], [data-test-id]').forEach(node => {
-                node.removeAttribute('id');
-                node.removeAttribute('data-testid');
-                node.removeAttribute('data-test-id');
-            });
             relabel(item, 'Export Complete Markdown (TEST)');
 
             item.addEventListener('click', async event => {
                 event.preventDefault();
                 event.stopPropagation();
                 if (item.getAttribute('aria-disabled') === 'true') return;
+
                 item.setAttribute('aria-disabled', 'true');
                 relabel(item, 'Exporting Complete Markdown…');
                 try {
                     await globalThis.ChatGptCompleteMarkdownExporter.exportCurrent();
+                } catch (error) {
+                    // exportCurrent already presents a fail-closed user-facing
+                    // error; avoid an unhandled promise rejection in the test UI.
                 } finally {
-                    document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+                    document.dispatchEvent(new KeyboardEvent('keydown', {
+                        key: 'Escape',
+                        bubbles: true
+                    }));
                 }
             });
 
-            markdown.insertAdjacentElement('afterend', item);
+            projectItem.insertAdjacentElement('beforebegin', item);
         }
     }
 
